@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "route": "snapshot",
+  "synthetic_fixtures": true,
+  "files": {
+    ".gitignore": "3a47a96c7833470f0b5956f72383e5bbc2d1e0b3e472b730f176098034aeabe4",
+    "LICENSE": "51551b963cc89ce0f5ffdab1a172ba197deb92f4fb7c6a14418288c69099dff6",
+    "README.md": "d2dd93ca9af3bbda6cd4d0b2db7d14390c8c00125158f0f601fc231b771f1e5d",
+    "README_EN.md": "99d942aa9e14e56bba1692a74dad4bb043392e3261f9bf5aee8e324bed587fd8",
+    "THIRD-PARTY-NOTICES.md": "e5e5bfd4657a1ee36365e148cdc394eb708433399ccd44a72242c777efd0b0eb",
+    "engine/sig_extract.py": "d2b672b9eacdaacc71160a5536168e496e653e4b5fc5b35d98ca0f31a8b23a52",
+    "requirements.txt": "9dfb8dca765a8529d44808bcb87fa135c656003a6f9063d1ad967148ed52c42f",
+    "test/fixtures/sig-a.png": "393f3a34cf2c4b25ee962d6357b101793d693166ff8cf5718056b23144dc32b5",
+    "test/fixtures/sig-b.png": "aef51202b8e9259ea993ca91500ae7cbcc6925312146cb78c3313e2b46921612",
+    "test/generate_fixtures.py": "c795734df4ca900b71bd9d85e1ff3cae0279578f786fbe568487e1af6d35bff3",
+    "test/test-harness.html": "3515a1eaa1cebdfdb26a108dcca9beb2b1512c8b8188c349e8827ed6154f4481",
+    "test/verify.py": "6d943064e922cf551d42426aa45e1941e0ea9a35823dd7c0ee81cb6c2444f9d6",
+    "verify.sh": "8042a2e0b0cf2a470db0d048c8363c8d92aca6d18a168d68b0904f20b4ff61af",
+    "web/index.html": "36a0b0983b5118bf3d9abc939d133fb6ec7c26347022f914192226216eb3457e",
+    "web/sig-core.js": "f61267e045fc73e3f49074180e7900b824dc4f9e91109705dca74dfd3f12330e"
+  }
+}

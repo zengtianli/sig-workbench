@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sig synthetic parity tests</title></head>
+<body><pre id="r">running</pre>
+<script src="../web/sig-core.js"></script>
+<script>
+const CASES = [
+  {name:'sig-a', src:'fixtures/sig-a.png', deline:false},
+  {name:'sig-a-deline', src:'fixtures/sig-a.png', deline:true},
+  {name:'sig-b', src:'fixtures/sig-b.png', deline:false},
+  {name:'sig-b-deline-noop', src:'fixtures/sig-b.png', deline:true}
+];
+(async () => {
+  const out = [];
+  for (const c of CASES){
+    const img = new Image();
+    await new Promise((resolve,reject) => {
+      img.onload=resolve; img.onerror=reject; img.src=c.src;
+    });
+    const cv=document.createElement('canvas');
+    cv.width=img.width; cv.height=img.height;
+    const cx=cv.getContext('2d',{willReadFrequently:true}); cx.drawImage(img,0,0);
+    const r=window.SigCore.extract(cx.getImageData(0,0,cv.width,cv.height),
+      {ink:'black',scale:4,bias:0,deline:c.deline,denoise:true});
+    out.push(r.error ? {name:c.name,error:r.error} : {
+      name:c.name,thr:r.thr,ratio:r.ratio*100,delineDelta:r.delineDelta
+    });
+  }
+  document.getElementById('r').textContent=JSON.stringify(out);
+})().catch(error => {document.getElementById('r').textContent=JSON.stringify({error:String(error)});});
+</script></body></html>

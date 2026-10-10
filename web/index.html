@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<!-- cc-no-provenance -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sig · 签名工作台</title>
+<style>
+:root{
+  --bg:#faf9f7; --card:#fff; --ink:#1c1b19; --muted:#6b6862; --line:#e5e2dc;
+  --accent:#8c5a2b; --accent-soft:#f3ece3; --ok:#2f6f4f; --warn:#a8641b;
+  --radius:14px; --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+header{margin-bottom:22px}
+h1{font-size:22px;margin:0 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);font-size:13.5px}
+.privacy{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 11px;
+  background:var(--accent-soft);color:var(--accent);border-radius:999px;font-size:12.5px;font-weight:600}
+
+/* 投放区 */
+#drop{border:2px dashed var(--line);border-radius:var(--radius);background:var(--card);
+  padding:34px 20px;text-align:center;cursor:pointer;transition:.18s;margin-bottom:20px}
+#drop:hover,#drop.hot{border-color:var(--accent);background:var(--accent-soft)}
+#drop strong{display:block;font-size:16px;margin-bottom:4px}
+#drop span{color:var(--muted);font-size:13px}
+input[type=file]{display:none}
+
+/* 控件 */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:20px;box-shadow:var(--shadow)}
+.ctrls{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 22px}
+.ctrl{display:flex;flex-direction:column;gap:5px}
+.ctrl label{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.ctrl .row{display:flex;align-items:center;gap:8px}
+select,input[type=range],input[type=color]{font:inherit}
+select{padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+input[type=range]{flex:1;accent-color:var(--accent)}
+input[type=color]{width:38px;height:30px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff}
+.val{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+.switch{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.switch input{width:17px;height:17px;accent-color:var(--accent);margin:0}
+.switch span{font-size:13.5px}
+
+/* 结果卡 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:18px;box-shadow:var(--shadow)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.fname{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stats{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.previews{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+@media(max-width:640px){.previews{grid-template-columns:1fr}}
+.pv{background:#fff;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;min-height:120px;justify-content:center}
+.pv.checker,.thumb.checker{background-color:#fff;
+  background-image:linear-gradient(45deg,#e3e1dd 25%,transparent 25%,transparent 75%,#e3e1dd 75%),
+                   linear-gradient(45deg,#e3e1dd 25%,transparent 25%,transparent 75%,#e3e1dd 75%);
+  background-size:18px 18px;background-position:0 0,9px 9px}
+.pv img{max-width:100%;height:auto;display:block}
+.pv em{font-style:normal;font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.86);
+  padding:1px 7px;border-radius:5px}
+.card-ft{display:flex;gap:9px;padding:11px 16px;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+button{font:inherit;font-size:13.5px;padding:7px 15px;border-radius:9px;border:1px solid var(--line);
+  background:#fff;color:var(--ink);cursor:pointer;transition:.15s}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(1.08);color:#fff}
+.note{font-size:12px;color:var(--muted)}
+.note.warn{color:var(--warn);font-weight:600}
+.note.ok{color:var(--ok)}
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12.5px;line-height:1.75}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:4px;font-size:12px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.codeline{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:4px;padding-bottom:2px}
+.codeline code{white-space:nowrap;display:inline-block}
+.hidden{display:none}
+
+/* 我的签名库（存在访客自己的浏览器里） */
+.lib-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.lib-hd strong{font-size:15px}
+.lib-hd .note{margin-left:8px}
+.libtools{display:flex;gap:8px;flex-wrap:wrap}
+.lib-privacy{display:block;line-height:1.7;background:var(--accent-soft);color:var(--accent);
+  border-radius:10px;padding:9px 12px;margin-bottom:12px}
+.libgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px}
+.libitem{border:1px solid var(--line);border-radius:11px;padding:9px;background:#fff;
+  display:flex;flex-direction:column;gap:6px;min-width:0}
+.thumb{min-height:84px;display:flex;align-items:center;justify-content:center;padding:6px;
+  border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.thumb img{max-width:100%;max-height:96px;height:auto;display:block}
+.libname{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.libmeta{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.libbtns{display:flex;gap:5px;flex-wrap:wrap}
+.libbtns button{font-size:12px;padding:4px 9px;border-radius:7px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>签名工作台</h1>
+  <div class="sub">手写签名照 → 透明底 PNG。自适应阈值，不用调参数。</div>
+  <div class="privacy">🔒 全部在本机浏览器内处理，图片不上传服务器</div>
+</header>
+
+<div id="drop">
+  <strong>拖入 / 点击选择 / 直接粘贴签名照片</strong>
+  <span>支持多张 · 手机可直接拍照 · JPG / PNG / HEIC</span>
+  <input type="file" id="file" accept="image/*" multiple>
+</div>
+
+<div class="panel">
+  <div class="ctrls">
+    <div class="ctrl">
+      <label>墨色</label>
+      <div class="row">
+        <select id="ink">
+          <option value="black">纯黑（默认）</option>
+          <option value="blue">深蓝墨水</option>
+          <option value="darkblue">藏青</option>
+          <option value="auto">保留原色相</option>
+          <option value="custom">自定义…</option>
+        </select>
+        <input type="color" id="inkCustom" value="#1a3a8f" class="hidden">
+      </div>
+    </div>
+    <div class="ctrl">
+      <label>放大倍数（决定可用尺寸）</label>
+      <div class="row"><input type="range" id="scale" min="1" max="6" step="1" value="4"><span class="val" id="scaleV">4×</span></div>
+    </div>
+    <div class="ctrl">
+      <label>阈值微调（0 = 纯自适应，一般不用动）</label>
+      <div class="row"><input type="range" id="bias" min="-30" max="30" step="2" value="0"><span class="val" id="biasV">0</span></div>
+    </div>
+    <div class="ctrl">
+      <label>处理选项</label>
+      <label class="switch"><input type="checkbox" id="deline"><span>剥掉签名栏横线</span></label>
+      <label class="switch"><input type="checkbox" id="denoise" checked><span>去噪点</span></label>
+    </div>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<section class="panel" id="lib">
+  <div class="lib-hd">
+    <div><strong>我的签名库</strong><span class="note" id="libCount"></span></div>
+    <div class="libtools hidden" id="libTools">
+      <button id="libExport">导出全部（打包下载）</button>
+      <button id="libClearBtn">清空</button>
+    </div>
+  </div>
+  <div class="note lib-privacy">🖥 这个库存在<strong>你自己的浏览器里</strong>（IndexedDB），<strong>不上传服务器</strong>；换设备、换浏览器、用无痕窗口或清除浏览器数据，里面的签名就没了。要长期保存，请用「取用」或「导出全部」下载到本地。</div>
+  <div class="libgrid" id="libGrid"></div>
+  <div class="note" id="libEmpty">还没有存过任何签名 —— 上面抠好之后点「存进我的签名库」，它就会出现在这里。</div>
+</section>
+
+<footer>
+  <div>输出 PNG 内嵌 <strong>300 dpi</strong>，插进 Word / PDF 会按物理尺寸落下（卡片上标了 cm 宽）。放大倍数只决定像素数，不改 dpi 标称。</div>
+  <div style="margin-top:6px">同一套算法的命令行版（可批量、可进管线）—— 仓库里 <code>engine/</code> 下的同名脚本：
+    <div class="codeline"><code>python3 sig_extract.py &lt;照片…&gt; -o &lt;目录&gt; --preview</code></div>
+  </div>
+  <div style="margin-top:6px">算法：背景归一化 → Otsu 自适应阈值 → 软 alpha 保抗锯齿 → 连通域去噪 →（可选）水平开运算剥横线 + 纵向闭运算桥接竖笔 → 裁边 → 着色。</div>
+</footer>
+</div>
+
+<script src="sig-core.js"></script>
+<script>
+'use strict';
+const {extract, withDpi} = window.SigCore;
+
+/* ── UI ──────────────────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const drop = $('drop'), out = $('out');
+let queue = [];   // {name, imgData}
+
+function opts(){
+  return {
+    ink: $('ink').value, inkCustom: $('inkCustom').value,
+    scale: +$('scale').value, bias: +$('bias').value,
+    deline: $('deline').checked, denoise: $('denoise').checked,
+  };
+}
+
+async function loadFiles(files){
+  for (const f of files){
+    if (!f.type.startsWith('image/')) continue;
+    try {
+      const bmp = await createImageBitmap(f);
+      // 大图先降到长边 2400：签名不需要更多，形态学核会随尺寸变大
+      const long = Math.max(bmp.width, bmp.height);
+      const k = long > 2400 ? 2400/long : 1;
+      const c = document.createElement('canvas');
+      c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+      const cx = c.getContext('2d', {willReadFrequently:true});
+      cx.drawImage(bmp, 0, 0, c.width, c.height);
+      queue.push({name: f.name.replace(/\.[^.]+$/, '') || 'signature',
+                  imgData: cx.getImageData(0, 0, c.width, c.height)});
+    } catch(e){ console.error(e); }
+  }
+  render();
+}
+
+function render(){
+  out.innerHTML = '';
+  const o = opts();
+  queue.forEach((item, i) => {
+    const r = extract(item.imgData, o);
+    const card = document.createElement('div');
+    card.className = 'card';
+    if (r.error){
+      card.innerHTML = `<div class="card-hd"><span class="fname">${esc(item.name)}</span></div>
+        <div style="padding:16px"><div class="note warn">⚠ ${esc(r.error)}</div></div>
+        <div class="card-ft"><button data-rm="${i}">移除</button></div>`;
+      out.appendChild(card); return;
+    }
+    const url = r.canvas.toDataURL('image/png');
+    const dl = r.delineDelta;
+    const delineNote = dl === null ? ''
+      : dl <= 0.0005
+        ? `<span class="note warn">⚠ 未检出横线，剥线是空操作（这张与不勾选完全相同）</span>`
+        : `<span class="note ok">剥线生效 −${(dl*100).toFixed(2)}%</span>`;
+    card.innerHTML = `
+      <div class="card-hd">
+        <span class="fname">${esc(item.name)}</span>
+        <span class="stats">${r.canvas.width}×${r.canvas.height}px · @300dpi ≈ ${r.cm.toFixed(1)}cm 宽 ·
+          墨占比 ${(r.ratio*100).toFixed(1)}% · Otsu ${r.thr}</span>
+      </div>
+      <div class="previews">
+        <div class="pv"><img src="${url}" alt=""><em>白底（Word 里的样子）</em></div>
+        <div class="pv checker"><img src="${url}" alt=""><em>透明检查</em></div>
+      </div>
+      <div class="card-ft">
+        <button class="primary" data-dl="${i}">下载 PNG（300dpi）</button>
+        <button data-save="${i}">存进我的签名库</button>
+        <button data-copy="${i}">复制到剪贴板</button>
+        <button data-rm="${i}">移除</button>
+        ${delineNote}
+      </div>`;
+    card._result = r;
+    out.appendChild(card);
+  });
+}
+
+function esc(s){ return String(s).replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+
+function canvasBlob(canvas){
+  return new Promise(res => canvas.toBlob(b => res(b), 'image/png'));
+}
+
+/* 结果 canvas → 内嵌 300dpi 的 PNG Blob（下载与入库共用同一条路径） */
+async function png300(canvas){
+  const blob = await canvasBlob(canvas);
+  const buf = withDpi(await blob.arrayBuffer(), 300);
+  return new Blob([buf], {type:'image/png'});
+}
+
+function download(blob, filename){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+out.addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const card = b.closest('.card'), r = card._result;
+  if (b.dataset.rm !== undefined){ queue.splice(+b.dataset.rm, 1); render(); return; }
+  if (b.dataset.dl !== undefined){
+    download(await png300(r.canvas), (queue[+b.dataset.dl]?.name || 'signature') + '-签名.png');
+  }
+  if (b.dataset.save !== undefined){
+    const item = queue[+b.dataset.save];
+    const label = b.textContent;
+    try {
+      await libAdd({name: item?.name || 'signature', blob: await png300(r.canvas),
+                    w: r.canvas.width, h: r.canvas.height, cm: +r.cm.toFixed(1), ts: Date.now()});
+      b.textContent = '已存进签名库 ✓'; setTimeout(() => b.textContent = label, 1800);
+      renderLib();
+    } catch(err){
+      console.error(err);
+      b.textContent = '存不进去（浏览器不允许本地存储）'; setTimeout(() => b.textContent = label, 2600);
+    }
+  }
+  if (b.dataset.copy !== undefined){
+    try {
+      const blob = await canvasBlob(r.canvas);
+      await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+      b.textContent = '已复制 ✓'; setTimeout(() => b.textContent = '复制到剪贴板', 1600);
+    } catch(err){ b.textContent = '复制失败（浏览器不允许）'; }
+  }
+});
+
+drop.addEventListener('click', () => $('file').click());
+$('file').addEventListener('change', e => loadFiles(e.target.files));
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => {
+  e.preventDefault(); drop.classList.add('hot'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => {
+  e.preventDefault(); drop.classList.remove('hot'); }));
+drop.addEventListener('drop', e => loadFiles(e.dataTransfer.files));
+document.addEventListener('paste', e => {
+  const fs = [...(e.clipboardData?.files || [])];
+  if (fs.length) loadFiles(fs);
+});
+
+$('ink').addEventListener('change', () => {
+  $('inkCustom').classList.toggle('hidden', $('ink').value !== 'custom'); render(); });
+['inkCustom','deline','denoise'].forEach(id => $(id).addEventListener('change', render));
+$('scale').addEventListener('input', () => { $('scaleV').textContent = $('scale').value + '×'; });
+$('scale').addEventListener('change', render);
+$('bias').addEventListener('input', () => { $('biasV').textContent = $('bias').value; });
+$('bias').addEventListener('change', render);
+
+/* ── 我的签名库：IndexedDB（图片是 blob，localStorage 会爆配额） ────────── */
+const DB_NAME = 'sig-workbench', DB_STORE = 'signatures';
+let _db = null;
+function db(){
+  if (_db) return Promise.resolve(_db);
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('no indexedDB'));
+    const rq = indexedDB.open(DB_NAME, 1);
+    rq.onupgradeneeded = () => {
+      const d = rq.result;
+      if (!d.objectStoreNames.contains(DB_STORE))
+        d.createObjectStore(DB_STORE, {keyPath:'id', autoIncrement:true});
+    };
+    rq.onsuccess = () => { _db = rq.result; res(_db); };
+    rq.onerror = () => rej(rq.error);
+  });
+}
+// 事务与请求必须在同一个同步块里发出，中间 await 会让事务失活（TransactionInactiveError）
+async function idb(mode, fn){
+  const d = await db();
+  return new Promise((res, rej) => {
+    const t = d.transaction(DB_STORE, mode);
+    const r = fn(t.objectStore(DB_STORE));
+    t.onabort = t.onerror = () => rej(t.error || new Error('idb aborted'));
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+const libAll   = ()    => idb('readonly',  s => s.getAll());
+const libGet   = (id)  => idb('readonly',  s => s.get(id));
+const libAdd   = (rec) => idb('readwrite', s => s.add(rec));
+const libPut   = (rec) => idb('readwrite', s => s.put(rec));
+const libDel   = (id)  => idb('readwrite', s => s.delete(id));
+const libClear = ()    => idb('readwrite', s => s.clear());
+
+let libUrls = [];
+async function renderLib(){
+  const grid = $('libGrid');
+  libUrls.forEach(u => URL.revokeObjectURL(u)); libUrls = [];
+  let items;
+  try { items = await libAll(); }
+  catch(e){
+    grid.innerHTML = '';
+    $('libEmpty').innerHTML = '这个浏览器不支持本地存储（IndexedDB 不可用），签名库用不了 —— 抠好后请直接下载 PNG。';
+    $('libEmpty').classList.remove('hidden');
+    $('libTools').classList.add('hidden');
+    return;
+  }
+  items.sort((a, b) => b.ts - a.ts);
+  $('libCount').textContent = items.length ? `· 已存 ${items.length} 张` : '';
+  $('libEmpty').classList.toggle('hidden', items.length > 0);
+  $('libTools').classList.toggle('hidden', items.length === 0);
+  grid.innerHTML = '';
+  for (const it of items){
+    const u = URL.createObjectURL(it.blob); libUrls.push(u);
+    const d = document.createElement('div');
+    d.className = 'libitem';
+    d.innerHTML = `
+      <div class="thumb checker"><img src="${u}" alt=""></div>
+      <div class="libname" title="${esc(it.name)}">${esc(it.name)}</div>
+      <div class="libmeta">${it.w}×${it.h}px · ${it.cm}cm · ${new Date(it.ts).toLocaleDateString('zh-CN')}</div>
+      <div class="libbtns">
+        <button data-take="${it.id}">取用</button>
+        <button data-ren="${it.id}">重命名</button>
+        <button data-del="${it.id}">删除</button>
+      </div>`;
+    grid.appendChild(d);
+  }
+}
+
+$('libGrid').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const id = +(b.dataset.take ?? b.dataset.ren ?? b.dataset.del);
+  if (!Number.isFinite(id)) return;
+  const rec = await libGet(id); if (!rec) { renderLib(); return; }
+  if (b.dataset.take !== undefined){ download(rec.blob, rec.name + '-签名.png'); return; }
+  if (b.dataset.ren !== undefined){
+    const name = prompt('重命名这张签名：', rec.name);
+    if (name === null) return;
+    const t = name.trim(); if (!t) return;
+    rec.name = t.slice(0, 60); await libPut(rec); renderLib(); return;
+  }
+  if (b.dataset.del !== undefined){
+    if (!confirm(`删除「${rec.name}」？删了就找不回来了。`)) return;
+    await libDel(id); renderLib();
+  }
+});
+
+$('libClearBtn').addEventListener('click', async () => {
+  const items = await libAll();
+  if (!items.length) return;
+  if (!confirm(`清空签名库？${items.length} 张全部删除，不可恢复（建议先「导出全部」）。`)) return;
+  await libClear(); renderLib();
+});
+
+/* 打包下载：自己写的 store-only ZIP（零依赖，不发任何外部请求） */
+const CRC_T = (() => { const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++){ let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0; }
+  return t; })();
+function crc32(u8){
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(files){   // [{name, data: Uint8Array}]
+  const enc = new TextEncoder(), body = [], central = [];
+  const d = new Date();
+  const dosT = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF;
+  const dosD = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  let off = 0;
+  for (const f of files){
+    const nb = enc.encode(f.name), n = f.data.length, crc = crc32(f.data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, dosT, true); lh.setUint16(12, dosD, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, n, true); lh.setUint32(22, n, true);
+    lh.setUint16(26, nb.length, true); lh.setUint16(28, 0, true);
+    body.push(new Uint8Array(lh.buffer), nb, f.data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, dosT, true); ch.setUint16(14, dosD, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, n, true); ch.setUint32(24, n, true);
+    ch.setUint16(28, nb.length, true); ch.setUint16(30, 0, true); ch.setUint16(32, 0, true);
+    ch.setUint16(34, 0, true); ch.setUint16(36, 0, true); ch.setUint32(38, 0, true);
+    ch.setUint32(42, off, true);
+    central.push(new Uint8Array(ch.buffer), nb);
+    off += 30 + nb.length + n;
+  }
+  const cdSize = central.reduce((a, u) => a + u.length, 0);
+  const eo = new DataView(new ArrayBuffer(22));
+  eo.setUint32(0, 0x06054b50, true); eo.setUint16(4, 0, true); eo.setUint16(6, 0, true);
+  eo.setUint16(8, files.length, true); eo.setUint16(10, files.length, true);
+  eo.setUint32(12, cdSize, true); eo.setUint32(16, off, true); eo.setUint16(20, 0, true);
+  return new Blob([...body, ...central, new Uint8Array(eo.buffer)], {type:'application/zip'});
+}
+
+$('libExport').addEventListener('click', async e => {
+  const btn = e.currentTarget, label = btn.textContent;
+  const items = await libAll();
+  if (!items.length) return;
+  btn.disabled = true; btn.textContent = '打包中…';
+  try {
+    const used = new Set(), files = [];
+    for (const it of items.sort((a, b) => a.ts - b.ts)){
+      let base = (it.name || 'signature').replace(/[\\/:*?"<>|]/g, '_') + '-签名';
+      let nm = base + '.png', k = 2;
+      while (used.has(nm)) nm = `${base}-${k++}.png`;
+      used.add(nm);
+      files.push({name: nm, data: new Uint8Array(await it.blob.arrayBuffer())});
+    }
+    const stamp = new Date().toISOString().slice(0, 10);
+    download(zipStore(files), `我的签名库-${stamp}.zip`);
+  } finally { btn.disabled = false; btn.textContent = label; }
+});
+
+renderLib();
+</script>
+</body>
+</html>
