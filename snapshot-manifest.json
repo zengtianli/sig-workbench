@@ -11,7 +11,6 @@
     "bin/sig": "370b4d1a1fb18ba563e93ea68f4b66e208127ba65901e6d570ca28abc72f3be8",
     "engine/sig_extract.py": "d2b672b9eacdaacc71160a5536168e496e653e4b5fc5b35d98ca0f31a8b23a52",
     "requirements.txt": "9dfb8dca765a8529d44808bcb87fa135c656003a6f9063d1ad967148ed52c42f",
-    "test/__pycache__/generate_fixtures.cpython-312.pyc": "1d6e6dbf17d1572e236bd242e175a8013c362021a9d4e825c50ff0aec585ab97",
     "test/fixtures/sig-a.png": "393f3a34cf2c4b25ee962d6357b101793d693166ff8cf5718056b23144dc32b5",
     "test/fixtures/sig-b.png": "aef51202b8e9259ea993ca91500ae7cbcc6925312146cb78c3313e2b46921612",
     "test/generate_fixtures.py": "c795734df4ca900b71bd9d85e1ff3cae0279578f786fbe568487e1af6d35bff3",
