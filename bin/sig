@@ -1,0 +1,9 @@
+#!/bin/sh
+# Resolve symlinks without requiring a native bundle or changing the caller's directory.
+SIG_ROOT="$(CDPATH= cd -- "$(dirname -- "$(readlink "$0" 2>/dev/null || printf '%s' "$0")")/.." && pwd)"
+if [ -z "${SIG_PYTHON:-}" ]; then
+  if [ -x "$SIG_ROOT/.venv/bin/python" ]; then SIG_PYTHON="$SIG_ROOT/.venv/bin/python"
+  elif [ -x "$HOME/Dev/.venv/bin/python" ]; then SIG_PYTHON="$HOME/Dev/.venv/bin/python"
+  else SIG_PYTHON=python3; fi
+fi
+exec "$SIG_PYTHON" "$SIG_ROOT/tools/sig_cli.py" "$@"

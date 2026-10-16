@@ -5,18 +5,27 @@
   "files": {
     ".gitignore": "3a47a96c7833470f0b5956f72383e5bbc2d1e0b3e472b730f176098034aeabe4",
     "LICENSE": "51551b963cc89ce0f5ffdab1a172ba197deb92f4fb7c6a14418288c69099dff6",
-    "README.md": "d2dd93ca9af3bbda6cd4d0b2db7d14390c8c00125158f0f601fc231b771f1e5d",
-    "README_EN.md": "99d942aa9e14e56bba1692a74dad4bb043392e3261f9bf5aee8e324bed587fd8",
+    "README.md": "485050d055f21777fc3baa937e62cef28c124b05b8cc095e709b2ec555b4f987",
+    "README_EN.md": "dbaea7cfbb9a6505e6909cf0feb75aafaedf1e95a8a5d9b13b1b73065d912bf1",
     "THIRD-PARTY-NOTICES.md": "e5e5bfd4657a1ee36365e148cdc394eb708433399ccd44a72242c777efd0b0eb",
+    "bin/sig": "370b4d1a1fb18ba563e93ea68f4b66e208127ba65901e6d570ca28abc72f3be8",
     "engine/sig_extract.py": "d2b672b9eacdaacc71160a5536168e496e653e4b5fc5b35d98ca0f31a8b23a52",
     "requirements.txt": "9dfb8dca765a8529d44808bcb87fa135c656003a6f9063d1ad967148ed52c42f",
+    "test/__pycache__/generate_fixtures.cpython-312.pyc": "1d6e6dbf17d1572e236bd242e175a8013c362021a9d4e825c50ff0aec585ab97",
     "test/fixtures/sig-a.png": "393f3a34cf2c4b25ee962d6357b101793d693166ff8cf5718056b23144dc32b5",
     "test/fixtures/sig-b.png": "aef51202b8e9259ea993ca91500ae7cbcc6925312146cb78c3313e2b46921612",
     "test/generate_fixtures.py": "c795734df4ca900b71bd9d85e1ff3cae0279578f786fbe568487e1af6d35bff3",
     "test/test-harness.html": "3515a1eaa1cebdfdb26a108dcca9beb2b1512c8b8188c349e8827ed6154f4481",
     "test/verify.py": "6d943064e922cf551d42426aa45e1941e0ea9a35823dd7c0ee81cb6c2444f9d6",
+    "tools/browser_session.py": "6dd85dc9174da0a2f824129f4861c4588f49a6829b2fbf48ab93bcd0e39d0c06",
+    "tools/sig_cli.py": "c7f22d1f0769a0b3a1b62187f113396030221e81990a1381fb9bdd73eef2326d",
+    "tools/sig_config.cjs": "dab2cb7f70c8d29b14d85851f95d970098cefa483767ff10eab0404acc8d930b",
+    "tools/workspace_actions.js": "433915ff144d1ef05e8f9e4cdd5d920c0b3b9e5b3751fb542e957f8b8278ab4b",
     "verify.sh": "8042a2e0b0cf2a470db0d048c8363c8d92aca6d18a168d68b0904f20b4ff61af",
-    "web/index.html": "36a0b0983b5118bf3d9abc939d133fb6ec7c26347022f914192226216eb3457e",
-    "web/sig-core.js": "f61267e045fc73e3f49074180e7900b824dc4f9e91109705dca74dfd3f12330e"
+    "web/index.html": "d23c78d8c8419a123d2f9ff8fe9bab6a0d1c46fb635946c7dc1e75f4183e50ec",
+    "web/sig-core.js": "f61267e045fc73e3f49074180e7900b824dc4f9e91109705dca74dfd3f12330e",
+    "web/sig-product-ui.js": "832df2534962b7f881df80c6f644153646a9ba071bc19c913d06157416b7e11d",
+    "web/sig-product.js": "7d34dba4ea2851b306491a4cc5e348537a02527d53467a7c9ca8f20f999774cd",
+    "web/version.json": "90a628f8e86544cfe13477a6f5f5ec44e8b144dae6ef905673cac3f03cef9f5f"
   }
 }

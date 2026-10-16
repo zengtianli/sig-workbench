@@ -30,6 +30,41 @@ python3 -m http.server 8000 --bind 127.0.0.1
 直接打开文件时，存储行为因浏览器而异；本地服务器提供稳定的来源地址。
 剪贴板功能还取决于浏览器权限和安全上下文，无法使用时可下载 PNG。
 
+## 设置、快捷键和版本
+
+顶部「设置与更新」提供配置 JSON 导出/导入。处理参数和两个选项保存在当前浏览器的
+localStorage；配置文件不包含签名图片、账号或权限。Alt / Option + Shift + S 打开设置，
+可关闭；输入控件内、Ctrl / Command 保留组合和重复按键不触发。浏览器或系统占用同一
+组合时可用按钮。纯 Web 无 Apple 原生 iCloud 容器，换设备请导出/导入配置并备份图片。
+
+「检查更新」实际读取同源 `version.json`，获取新版入口重新载入原页面，保留配置和
+IndexedDB。自动检查默认关闭，可选择每次打开时检查；网络错误或坏版本信息会显示失败。
+直接打开 file:// 时浏览器可能禁止 fetch，请按上面方法使用本地服务器。
+
+可用 Node 读取导出的同一配置格式或检查当前源码版本，不读取用户浏览器目录：
+
+```sh
+node tools/sig_config.cjs config status --config ./exported-sig.json --json
+node tools/sig_config.cjs config import --config ./portable-sig.json --input ./exported-sig.json --json
+node tools/sig_config.cjs update check --json
+```
+
+完整 Agent 入口为 `bin/sig`，无需常驻服务。先按下方步骤准备 Python 环境，设
+`SIG_PYTHON=.venv/bin/python`；Chrome/Chromium 用于实际网页工作区，可用 `CHROME` 指定路径。
+
+```sh
+SIG_PYTHON=.venv/bin/python bin/sig status --json
+SIG_PYTHON=.venv/bin/python bin/sig extract test/fixtures/sig-a.png --output sample.png --json
+SIG_PYTHON=.venv/bin/python bin/sig workspace add --profile ./sig-profile --input test/fixtures/sig-a.png --json
+SIG_PYTHON=.venv/bin/python bin/sig workspace export --profile ./sig-profile --output signatures.zip --json
+```
+
+工作区复用真实网页 IndexedDB，提供 list、rename、remove、clear、config-import/config-export、update；
+删除需 `--yes`。`--profile` 必须是新空目录或本工具拥有的目录，拒绝读取普通浏览器配置。
+配置导出与网页相同，但工作区独立于日常浏览器，可通过网页 JSON 和导出的 PNG 迁移。
+原网页的系统剪贴板与实际按键仍仅由本人在窗口中操作。成功/失败 JSON 分别有 ok:true 与
+ok:false/error，退出码为 0 成功、1 操作失败、2 用法错误。
+
 ## 可选 Python 命令行
 
 需要 Python 3.10 或更新版本。网页版不需要这些依赖：

@@ -37,6 +37,45 @@ own backups. Storage behavior for directly opened files varies by browser;
 a local server provides a stable origin. Clipboard support also depends on
 browser permissions and a secure context; use PNG download if unavailable.
 
+## Settings, shortcuts, and versions
+
+Settings and Updates exports/imports portable JSON preferences. Processing parameters and both
+options persist in this browser's localStorage; exported settings contain no images, accounts,
+or permissions. Alt / Option + Shift + S opens settings and can be disabled. Editing controls,
+Ctrl / Command combinations, and repeated keys are excluded. Use the button if the browser or
+operating system reserves this combination. A plain Web page has no native Apple iCloud
+container; transfer preferences by export/import and back up images separately.
+
+Check Updates reads the same-origin version.json. A newer version is obtained by reloading the
+same page, preserving preferences and IndexedDB. Startup checks are off by default and can be
+enabled. Unavailable or malformed version information produces an explicit failure. For file://
+fetch restrictions, use the local server described above.
+
+Node reads the same exported settings format and source version without opening a user browser profile:
+
+```sh
+node tools/sig_config.cjs config status --config ./exported-sig.json --json
+node tools/sig_config.cjs config import --config ./portable-sig.json --input ./exported-sig.json --json
+node tools/sig_config.cjs update check --json
+```
+
+The complete agent entry is `bin/sig`, without a resident service. Prepare the Python environment below
+and set `SIG_PYTHON=.venv/bin/python`. Chrome/Chromium runs the real Web workspace; `CHROME` overrides its path.
+
+```sh
+SIG_PYTHON=.venv/bin/python bin/sig status --json
+SIG_PYTHON=.venv/bin/python bin/sig extract test/fixtures/sig-a.png --output sample.png --json
+SIG_PYTHON=.venv/bin/python bin/sig workspace add --profile ./sig-profile --input test/fixtures/sig-a.png --json
+SIG_PYTHON=.venv/bin/python bin/sig workspace export --profile ./sig-profile --output signatures.zip --json
+```
+
+Workspace commands use the actual Web IndexedDB and support list, rename, remove, clear,
+config-import/config-export, and update. Deletion requires `--yes`. Profiles must be empty or owned
+by this tool; ordinary browser profiles are refused. This workspace is separate from daily browsers;
+transfer preferences with the same Web JSON and images with exported PNGs. Clipboard permissions and
+physical keys remain window-only actions. JSON includes ok:true on success or ok:false/error on failure;
+exit codes are 0 success, 1 operation failure, and 2 usage error.
+
 ## Optional Python CLI
 
 Requires Python 3.10 or newer. These dependencies are not needed for the web UI:

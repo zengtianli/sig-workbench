@@ -97,6 +97,14 @@ code{background:var(--accent-soft);padding:1px 5px;border-radius:4px;font-size:1
 .libmeta{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .libbtns{display:flex;gap:5px;flex-wrap:wrap}
 .libbtns button{font-size:12px;padding:4px 9px;border-radius:7px}
+dialog{width:min(600px,calc(100% - 28px));max-height:90vh;overflow:auto;background:var(--card);
+  color:var(--ink);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(80,75,65,.18)}
+dialog h2{margin:0;font-size:20px}dialog h3{font-size:15px;margin:20px 0 8px}
+dialog textarea{width:100%;min-height:140px;margin-top:10px;border:1px solid var(--line);
+  border-radius:8px;padding:10px;color:var(--ink);background:#fff;font:12px/1.6 ui-monospace,monospace}
+dialog .switch{margin:10px 0}dialog .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#openSettings{margin:10px 0 0 8px}#getUpdate{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -105,7 +113,27 @@ code{background:var(--accent-soft);padding:1px 5px;border-radius:4px;font-size:1
   <h1>签名工作台</h1>
   <div class="sub">手写签名照 → 透明底 PNG。自适应阈值，不用调参数。</div>
   <div class="privacy">🔒 全部在本机浏览器内处理，图片不上传服务器</div>
+  <button id="openSettings" aria-haspopup="dialog">设置与更新</button>
 </header>
+
+<dialog id="settingsDialog" aria-labelledby="settingsTitle">
+  <h2 id="settingsTitle">Sig · 设置与更新</h2>
+  <p class="note">处理参数在工作台直接调整并保存；配置仅存在这个浏览器里。</p>
+  <h3>快捷键</h3>
+  <label class="switch"><input type="checkbox" id="shortcuts"><span>启用 Alt / Option + Shift + S 打开设置</span></label>
+  <p class="note">仅当前网页有效，输入框内不触发；不接管 Ctrl / Command 等浏览器快捷键。与系统组合冲突时可关闭。</p>
+  <h3>配置迁移</h3>
+  <p class="note">导出下方 JSON 可在另一个浏览器导入；不包含签名图片、账号或权限。纯网页无法接入 Apple 原生 iCloud 容器，签名仍保存在本机 IndexedDB。</p>
+  <div class="actions"><button id="exportSettings">导出配置</button><button id="importSettings">导入配置</button></div>
+  <textarea id="settingsJson" aria-label="配置 JSON" spellcheck="false" placeholder="在此粘贴导出的 Sig 配置"></textarea>
+  <div class="note" id="settingsStatus" role="status" aria-live="polite"></div>
+  <h3>版本维护 · <span id="currentVersion">读取中</span></h3>
+  <label class="switch"><input type="checkbox" id="autoCheckUpdates"><span>打开工作台时自动检查更新</span></label>
+  <p class="note">只读取本站版本信息，不发送图片或配置。新版通过重新载入页面获取，保留同一浏览器里的设置与签名。</p>
+  <div class="actions"><button id="checkUpdates">检查更新</button><a id="getUpdate" href="./" hidden>重新载入获取新版</a></div>
+  <div class="note" id="updateStatus" role="status" aria-live="polite"></div>
+  <div class="actions"><button id="closeSettings">关闭</button></div>
+</dialog>
 
 <div id="drop">
   <strong>拖入 / 点击选择 / 直接粘贴签名照片</strong>
@@ -475,5 +503,7 @@ $('libExport').addEventListener('click', async e => {
 
 renderLib();
 </script>
+<script src="sig-product.js"></script>
+<script src="sig-product-ui.js"></script>
 </body>
 </html>
